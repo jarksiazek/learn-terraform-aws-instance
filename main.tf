@@ -25,5 +25,13 @@ module "security_group" {
 module "compute" {
   source = "./modules/compute"
   subnet_web_ids = module.network.subnet_web_ids
-  security_group_id = module.security_group.security_group_id
+  security_group_id = module.security_group.web_instance_sg_id
+}
+
+module "load_balancer" {
+  source = "./modules/load_balancer"
+  vpc_id = module.network.vpc_id
+  subnet_web_ids = module.network.subnet_web_ids
+  sg_load_balancer_id = module.security_group.web_load_balancer_sg_id
+  instance_ids = module.compute.instance_ids
 }

@@ -4,7 +4,7 @@ resource "aws_vpc" "terraform" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "terraform"
+    name = "terraform"
   }
 }
 
@@ -22,44 +22,29 @@ resource "aws_route_table" "terraform_public_rt" {
   }
 
   tags = {
-    Name = "publicRouteTable"
+    name = "publicRouteTable"
   }
 }
 
-# 2 subnets web
 resource "aws_subnet" "terraform_subnet_web" {
   count = length(var.web_subnets)
   vpc_id = aws_vpc.terraform.id
   cidr_block = var.web_subnets[count.index].cidr
   availability_zone = var.web_subnets[count.index].az
-  map_public_ip_on_launch = true
 
   tags = {
-    Name = format("%s%s", "terraform-subnet_web_", count.index + 1)
+    name = format("%s%s", "terraform-subnet_web_", count.index + 1)
   }
 }
 
-# Route table association with public subnets
 resource "aws_route_table_association" "association_with_subnets_web" {
   count = length(aws_subnet.terraform_subnet_web)
   subnet_id = element(aws_subnet.terraform_subnet_web.*.id, count.index)
   route_table_id = aws_route_table.terraform_public_rt.id
 }
 
-# 2 subnets rds
-resource "aws_subnet" "terraform_subnet_rds" {
-  count = length(var.rds_subnets)
-  vpc_id = aws_vpc.terraform.id
-  cidr_block = var.rds_subnets[count.index].cidr
-  availability_zone = var.rds_subnets[count.index].az
-
-  tags = {
-    Name = format("%s%s", "terraform-subnet_rds_", count.index + 1)
-  }
-}
-
 output "vpc_id" {
-  description = "VPC ID"
+  description = "vpc id"
   value = aws_vpc.terraform.id
 }
 

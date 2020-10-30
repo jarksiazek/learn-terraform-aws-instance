@@ -8,12 +8,17 @@ resource "aws_instance" "web-instance" {
                   #!/bin/bash
                   sudo su
                   yum -y install httpd
-                  echo "<p> My Instance! </p>" >> /var/www/html/index.html
+                  echo "<p> My Instance $(hostname -f) </p>" >> /var/www/html/index.html
                   sudo systemctl enable httpd
                   sudo systemctl start httpd
                   EOF
 
   tags = {
-    Name = format("%s%s", "terraform-ec2_web_", count.index + 1)
+    name = format("%s%s", "terraform-ec2_web_", count.index + 1)
+    target = count.index + 1
   }
+}
+
+output "instance_ids" {
+  value = aws_instance.web-instance.*.id
 }
