@@ -31,6 +31,7 @@ resource "aws_subnet" "terraform_subnet_web" {
   vpc_id = aws_vpc.terraform.id
   cidr_block = var.web_subnets[count.index].cidr
   availability_zone = var.web_subnets[count.index].az
+  map_public_ip_on_launch = true
 
   tags = {
     name = format("%s%s", "terraform-subnet_web_", count.index + 1)
