@@ -8,10 +8,10 @@ variable "subnet_web_ids" {
   type = list(string)
 }
 
-variable "instance_ids" {
+/*variable "instance_ids" {
   description = "The instance ids to be attached to load balancer"
   type = list(string)
-}
+}*/
 
 variable "target_names" {
   type = list(string)
@@ -22,4 +22,3 @@ variable "sg_load_balancer_id" {
   description = "The security group id for load balancer"
   type = string
 }
-
