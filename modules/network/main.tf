@@ -1,55 +1,50 @@
-resource "aws_vpc" "terraform" {
+resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
   enable_dns_support = true
   enable_dns_hostnames = true
 
   tags = {
-    name = "terraform"
+    env = var.aws_env
   }
 }
 
 # Internet Gateway
-resource "aws_internet_gateway" "terraform_igw" {
-  vpc_id = aws_vpc.terraform.id
+resource "aws_internet_gateway" "this" {
+  vpc_id = aws_vpc.this.id
+
+  tags = {
+    env = var.aws_env
+  }
 }
 
 # Route table: attach Internet Gateway
-resource "aws_route_table" "terraform_public_rt" {
-  vpc_id = aws_vpc.terraform.id
+resource "aws_route_table" "this" {
+  vpc_id = aws_vpc.this.id
   route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.terraform_igw.id
+    cidr_block = var.rt_route_cidr
+    gateway_id = aws_internet_gateway.this.id
   }
 
   tags = {
-    name = "publicRouteTable"
+    env = var.aws_env
   }
 }
 
-resource "aws_subnet" "terraform_subnet_web" {
-  count = length(var.web_subnets)
-  vpc_id = aws_vpc.terraform.id
-  cidr_block = var.web_subnets[count.index].cidr
-  availability_zone = var.web_subnets[count.index].az
+resource "aws_subnet" "this" {
+  for_each = var.web_subnets
+  vpc_id = aws_vpc.this.id
+  cidr_block = each.value.cidr
+  availability_zone = each.value.az
   map_public_ip_on_launch = true
 
   tags = {
-    name = format("%s%s", "terraform-subnet_web_", count.index + 1)
+    name = format("%s%s", "subnet_web_", each.value.)
+    env = var.aws_env
   }
 }
 
-resource "aws_route_table_association" "association_with_subnets_web" {
-  count = length(aws_subnet.terraform_subnet_web)
-  subnet_id = element(aws_subnet.terraform_subnet_web.*.id, count.index)
-  route_table_id = aws_route_table.terraform_public_rt.id
-}
-
-output "vpc_id" {
-  description = "vpc id"
-  value = aws_vpc.terraform.id
-}
-
-output "subnet_web_ids" {
-  description = "subnet ids"
-  value = aws_subnet.terraform_subnet_web.*.id
+resource "aws_route_table_association" "this" {
+  for_each = aws_subnet.this
+  subnet_id = each.value.id
+  route_table_id = aws_route_table.this.id
 }

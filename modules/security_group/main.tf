@@ -6,19 +6,19 @@ resource "aws_security_group" "sg_web_load_balancer" {
   }
 
   ingress {
-    description = "Internet to ALB"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = var.ingress_traffic.ec2.description
+    from_port   = var.ingress_traffic.ec2.from_port
+    to_port     = var.ingress_traffic.ec2.to_port
+    protocol    = var.ingress_traffic.ec2.protocol
+    cidr_blocks = var.ingress_traffic.ec2.cidr_blocks
   }
 
   egress {
-    description = "All traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = var.egress_all_traffic.description
+    from_port   = var.egress_all_traffic.from_port
+    to_port     = var.egress_all_traffic.to_port
+    protocol    = var.egress_all_traffic.protocol
+    cidr_blocks = var.egress_all_traffic.cidr_blocks
   }
 }
 
@@ -29,31 +29,19 @@ resource "aws_security_group" "sg_web_instance" {
     name = "sg-web-instance"
   }
 
-  egress {
-    description = "All traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  ingress {
+    description = var.ingress_traffic.load_balancer.description
+    from_port   = var.ingress_traffic.load_balancer.from_port
+    to_port     = var.ingress_traffic.load_balancer.to_port
+    protocol    = var.ingress_traffic.load_balancer.protocol
+    security_groups = [aws_security_group.sg_web_load_balancer.id]
   }
-}
 
-resource "aws_security_group_rule" "sg_rule_instance_web" {
-  description = "ALB to instance"
-  type = "ingress"
-  from_port = 80
-  to_port = 80
-  protocol = "tcp"
-  source_security_group_id = aws_security_group.sg_web_load_balancer.id
-  security_group_id = aws_security_group.sg_web_instance.id
-}
-
-output "web_load_balancer_sg_id" {
-  description = "security group id for loadbalancer"
-  value = aws_security_group.sg_web_load_balancer.id
-}
-
-output "web_instance_sg_id" {
-  description = "security group id for instances"
-  value = aws_security_group.sg_web_instance.id
+  egress {
+    description = var.egress_all_traffic.description
+    from_port   = var.egress_all_traffic.from_port
+    to_port     = var.egress_all_traffic.to_port
+    protocol    = var.egress_all_traffic.protocol
+    cidr_blocks = var.egress_all_traffic.cidr_blocks
+  }
 }

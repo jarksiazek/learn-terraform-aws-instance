@@ -18,7 +18,3 @@ resource "aws_instance" "web-instance" {
     target = count.index + 1
   }
 }
-
-output "instance_ids" {
-  value = aws_instance.web-instance.*.id
-}

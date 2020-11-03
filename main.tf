@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">=0.12"
+  required_version = "= 0.13.5"
   backend "s3" {
     bucket = "terraform-eu-central-2020"
     key = "my"
@@ -9,12 +9,13 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
+  shared_credentials_file = "%USERPROFILE%/.aws/credentials"
+  profile                 = "terraform"
 }
 
 module "network" {
   source = "./modules/network"
+  aws_env = var.aws_environment
 }
 
 module "security_group" {
