@@ -1,8 +1,21 @@
+data "aws_ami" "amazon-linux-2" {
+  most_recent = true
+  owners = ["amazon"]
+  filter {
+    name = "name"
+    values = [var.instance.ami_name]
+  }
+  filter {
+    name = "architecture"
+    values = ["x86_64"]
+  }
+}
+
 resource "aws_launch_template" "asg_template_default" {
   name = "asg-template-default"
   description = "Asg Template"
-  image_id = "ami-00a205cb8e06c3c4e"
-  instance_type = "t2.micro"
+  image_id = data.aws_ami.amazon-linux-2.image_id
+  instance_type = var.instance.instance_type
   vpc_security_group_ids = [var.security_group_id]
 
   user_data = filebase64("${path.module}/example.sh")

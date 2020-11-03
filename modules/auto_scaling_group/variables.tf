@@ -12,3 +12,11 @@ variable "target_group_arns" {
   description = "The arns of target groups"
   type = list(string)
 }
+
+variable "instance" {
+  type = object({
+    ami_name = string
+    instance_type = string
+  })
+  description = "Instance"
+}

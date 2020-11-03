@@ -30,21 +30,21 @@ resource "aws_route_table" "this" {
   }
 }
 
-resource "aws_subnet" "this" {
-  for_each = var.web_subnets
+resource "aws_subnet" "web" {
+  count = length(var.aws_web_subnet_azs)
   vpc_id = aws_vpc.this.id
-  cidr_block = each.value.cidr
-  availability_zone = each.value.az
+  cidr_block = cidrsubnet(var.vpc_cidr, 8, count.index + 1)
+  availability_zone = var.aws_web_subnet_azs[count.index]
   map_public_ip_on_launch = true
 
   tags = {
-    name = format("%s%s", "subnet_web_", each.value.)
+    name = format("%s%s", "subnet_web_", element(var.aws_web_subnet_azs, count.index))
     env = var.aws_env
   }
 }
 
-resource "aws_route_table_association" "this" {
-  for_each = aws_subnet.this
-  subnet_id = each.value.id
+resource "aws_route_table_association" "web" {
+  count = length(aws_subnet.web)
+  subnet_id = aws_subnet.web[count.index].id
   route_table_id = aws_route_table.this.id
 }

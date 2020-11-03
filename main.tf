@@ -16,6 +16,7 @@ provider "aws" {
 module "network" {
   source = "./modules/network"
   aws_env = var.aws_environment
+  aws_web_subnet_azs = var.aws_web_azs
 }
 
 module "security_group" {
@@ -23,18 +24,11 @@ module "security_group" {
   vpc_id = module.network.vpc_id
 }
 
-/*module "compute" {
-  source = "./modules/compute"
-  subnet_web_ids = module.network.subnet_web_ids
-  security_group_id = module.security_group.web_instance_sg_id
-}*/
-
 module "load_balancer" {
   source = "./modules/load_balancer"
   vpc_id = module.network.vpc_id
   subnet_web_ids = module.network.subnet_web_ids
   sg_load_balancer_id = module.security_group.web_load_balancer_sg_id
-  //instance_ids = module.compute.instance_ids
 }
 
 module "auto_scaling_group" {
@@ -42,4 +36,5 @@ module "auto_scaling_group" {
   security_group_id = module.security_group.web_instance_sg_id
   subnet_web_ids = module.network.subnet_web_ids
   target_group_arns = module.load_balancer.target_group_arns
+  instance = var.instance
 }
