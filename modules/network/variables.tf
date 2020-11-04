@@ -15,3 +15,7 @@ variable "rt_route_cidr" {
 variable "aws_web_subnet_azs" {
   type = list(string)
 }
+
+variable "aws_rds_subnet_azs" {
+  type = list(string)
+}

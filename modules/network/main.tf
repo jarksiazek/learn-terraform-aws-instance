@@ -43,6 +43,18 @@ resource "aws_subnet" "web" {
   }
 }
 
+resource "aws_subnet" "rds" {
+  count = length(var.aws_rds_subnet_azs)
+  vpc_id = aws_vpc.this.id
+  cidr_block = cidrsubnet(var.vpc_cidr, 8, count.index + 11)
+  availability_zone = var.aws_rds_subnet_azs[count.index]
+
+  tags = {
+    name = format("%s%s", "subnet_rds_", element(var.aws_rds_subnet_azs, count.index))
+    env = var.aws_env
+  }
+}
+
 resource "aws_route_table_association" "web" {
   count = length(aws_subnet.web)
   subnet_id = aws_subnet.web[count.index].id

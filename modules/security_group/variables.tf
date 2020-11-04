@@ -27,6 +27,13 @@ variable "ingress_traffic" {
       protocol = "tcp"
       cidr_blocks = []
     },
+    db = {
+      description = "Ingress db from instance"
+      from_port = 3306
+      to_port = 3306
+      protocol = "tcp"
+      cidr_blocks = []
+    },
   }
 }
 

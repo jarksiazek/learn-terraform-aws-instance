@@ -45,3 +45,27 @@ resource "aws_security_group" "sg_web_instance" {
     cidr_blocks = var.egress_all_traffic.cidr_blocks
   }
 }
+
+resource "aws_security_group" "sg_db_instance" {
+  name = "sgDbInstance"
+  vpc_id = var.vpc_id
+  tags = {
+    name = "sg-db-instance"
+  }
+
+  ingress {
+    description = var.ingress_traffic.db.description
+    from_port   = var.ingress_traffic.db.from_port
+    to_port     = var.ingress_traffic.db.to_port
+    protocol    = var.ingress_traffic.db.protocol
+    security_groups = [aws_security_group.sg_web_instance.id]
+  }
+
+  egress {
+    description = var.egress_all_traffic.description
+    from_port   = var.egress_all_traffic.from_port
+    to_port     = var.egress_all_traffic.to_port
+    protocol    = var.egress_all_traffic.protocol
+    cidr_blocks = var.egress_all_traffic.cidr_blocks
+  }
+}

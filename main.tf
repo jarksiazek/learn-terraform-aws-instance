@@ -16,7 +16,8 @@ provider "aws" {
 module "network" {
   source = "./modules/network"
   aws_env = var.aws_environment
-  aws_web_subnet_azs = var.aws_web_azs
+  aws_web_subnet_azs = var.ec2_instance.aws_web_azs
+  aws_rds_subnet_azs = var.rds_instance.aws_rds_azs
 }
 
 module "security_group" {
@@ -36,5 +37,13 @@ module "auto_scaling_group" {
   security_group_id = module.security_group.web_instance_sg_id
   subnet_web_ids = module.network.subnet_web_ids
   target_group_arns = module.load_balancer.target_group_arns
-  instance = var.instance
+  instance_parameters = var.ec2_instance
+}
+
+module "rds_mysql" {
+  source = "./modules/rds"
+  aws_env = var.aws_environment
+  subnet_ids = module.network.subnet_db_ids
+  sg_db_id = module.security_group.db_instance_sg_id
+  rds_parameters = var.rds_instance
 }

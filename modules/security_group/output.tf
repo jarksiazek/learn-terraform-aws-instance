@@ -7,3 +7,8 @@ output "web_instance_sg_id" {
   description = "security group id for instances"
   value = aws_security_group.sg_web_instance.id
 }
+
+output "db_instance_sg_id" {
+  description = "security group id for db"
+  value = aws_security_group.sg_db_instance.id
+}

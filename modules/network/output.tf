@@ -4,6 +4,11 @@ output "vpc_id" {
 }
 
 output "subnet_web_ids" {
-  description = "subnet ids"
+  description = "subnet ids for web servers"
   value = aws_subnet.web.*.id
+}
+
+output "subnet_db_ids" {
+  description = "subnet ids for db"
+  value = aws_subnet.rds.*.id
 }
