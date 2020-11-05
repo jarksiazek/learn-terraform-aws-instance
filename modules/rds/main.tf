@@ -25,7 +25,8 @@ resource "aws_db_instance" "this" {
   maintenance_window = var.rds_parameters.maintenance_window
   backup_window      = var.rds_parameters.backup_window
 
-  final_snapshot_identifier = "db-terraform-snapshot"
+  //final_snapshot_identifier = "db-terraform-snapshot"
+  skip_final_snapshot = true
   deletion_protection = false
 
   tags = {
