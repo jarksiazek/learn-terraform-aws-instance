@@ -1,9 +1,9 @@
-data "aws_ami" "amazon-linux-2" {
+data "aws_ami" "amazon_linux_2" {
   most_recent = true
   owners = ["amazon"]
   filter {
     name = "name"
-    values = [var.instance_parameters.ami_name]
+    values = [var.ec2_instance_aim_name]
   }
   filter {
     name = "architecture"
@@ -14,8 +14,8 @@ data "aws_ami" "amazon-linux-2" {
 resource "aws_launch_template" "this" {
   name = "asg-template-default"
   description = "Asg Template"
-  image_id = data.aws_ami.amazon-linux-2.image_id
-  instance_type = var.instance_parameters.instance_type
+  image_id = data.aws_ami.amazon_linux_2.image_id
+  instance_type = var.ec2_instance_type
   vpc_security_group_ids = [var.security_group_id]
 
   user_data = filebase64("${path.module}/example.sh")
@@ -47,7 +47,7 @@ resource "aws_autoscaling_schedule" "this" {
 }
 
 # scale up alarm
-resource "aws_autoscaling_policy" "cpu-policy-scaleup" {
+resource "aws_autoscaling_policy" "cpu_policy_scaleup" {
   name = "cpu-policy-scaleup"
   autoscaling_group_name = aws_autoscaling_group.this.name
   cooldown = 300
@@ -55,7 +55,7 @@ resource "aws_autoscaling_policy" "cpu-policy-scaleup" {
   adjustment_type = "ChangeInCapacity"
 }
 
-resource "aws_cloudwatch_metric_alarm" "cpu-alarm-scaleup" {
+resource "aws_cloudwatch_metric_alarm" "cpu_alarm_scaleup" {
   alarm_name = "cpu-alarm-scaleup"
   alarm_description = "cpu-alarm-scaleup"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -69,11 +69,11 @@ resource "aws_cloudwatch_metric_alarm" "cpu-alarm-scaleup" {
     "AutoScalingGroupName" = aws_autoscaling_group.this.name
   }
   actions_enabled = true
-  alarm_actions = [aws_autoscaling_policy.cpu-policy-scaleup.arn]
+  alarm_actions = [aws_autoscaling_policy.cpu_policy_scaleup.arn]
 }
 
 # scale down alarm
-resource "aws_autoscaling_policy" "cpu-policy-scaledown" {
+resource "aws_autoscaling_policy" "cpu_policy_scaledown" {
   name = "cpu-policy-scaledown"
   autoscaling_group_name = aws_autoscaling_group.this.name
   adjustment_type = "ChangeInCapacity"
@@ -82,7 +82,7 @@ resource "aws_autoscaling_policy" "cpu-policy-scaledown" {
   policy_type = "SimpleScaling"
 }
 
-resource "aws_cloudwatch_metric_alarm" "example-cpu-alarm-scaledown" {
+resource "aws_cloudwatch_metric_alarm" "example_cpu_alarm_scaledown" {
   alarm_name = "cpu-alarm-scaledown"
   alarm_description = "cpu-alarm-scaledown"
   comparison_operator = "LessThanOrEqualToThreshold"
@@ -96,5 +96,5 @@ resource "aws_cloudwatch_metric_alarm" "example-cpu-alarm-scaledown" {
     "AutoScalingGroupName" = aws_autoscaling_group.this.name
   }
   actions_enabled = true
-  alarm_actions = [aws_autoscaling_policy.cpu-policy-scaledown.arn]
+  alarm_actions = [aws_autoscaling_policy.cpu_policy_scaledown.arn]
 }

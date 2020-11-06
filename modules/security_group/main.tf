@@ -1,16 +1,21 @@
 resource "aws_security_group" "sg_web_load_balancer" {
-  name = "sgWebLoadBalancer"
+  name = var.load_balancer_name
   vpc_id = var.vpc_id
   tags = {
-    name = "sg-web-load_balancer"
+    name = var.load_balancer_name
+    env = var.aws_env
   }
 
-  ingress {
-    description = var.ingress_traffic.ec2.description
-    from_port   = var.ingress_traffic.ec2.from_port
-    to_port     = var.ingress_traffic.ec2.to_port
-    protocol    = var.ingress_traffic.ec2.protocol
-    cidr_blocks = var.ingress_traffic.ec2.cidr_blocks
+  dynamic ingress {
+    iterator = rule
+    for_each = var.ingress_traffic_load_balancer
+    content {
+      description = rule.value.description
+      from_port = rule.value.from_port
+      to_port = rule.value.to_port
+      protocol = rule.value.protocol
+      cidr_blocks = rule.value.cidr_blocks
+    }
   }
 
   egress {
@@ -23,18 +28,22 @@ resource "aws_security_group" "sg_web_load_balancer" {
 }
 
 resource "aws_security_group" "sg_web_instance" {
-  name = "sgWebInstance"
+  name = var.ec2_name
   vpc_id = var.vpc_id
   tags = {
-    name = "sg-web-instance"
+    name = var.ec2_name
   }
 
-  ingress {
-    description = var.ingress_traffic.load_balancer.description
-    from_port   = var.ingress_traffic.load_balancer.from_port
-    to_port     = var.ingress_traffic.load_balancer.to_port
-    protocol    = var.ingress_traffic.load_balancer.protocol
-    security_groups = [aws_security_group.sg_web_load_balancer.id]
+  dynamic ingress {
+    iterator = rule
+    for_each = var.ingress_traffic_ec2
+    content {
+      description = rule.value.description
+      from_port = rule.value.from_port
+      to_port = rule.value.to_port
+      protocol = rule.value.protocol
+      security_groups = [aws_security_group.sg_web_load_balancer.id]
+    }
   }
 
   egress {
@@ -47,18 +56,22 @@ resource "aws_security_group" "sg_web_instance" {
 }
 
 resource "aws_security_group" "sg_db_instance" {
-  name = "sgDbInstance"
+  name = var.db_name
   vpc_id = var.vpc_id
   tags = {
     name = "sg-db-instance"
   }
 
-  ingress {
-    description = var.ingress_traffic.db.description
-    from_port   = var.ingress_traffic.db.from_port
-    to_port     = var.ingress_traffic.db.to_port
-    protocol    = var.ingress_traffic.db.protocol
-    security_groups = [aws_security_group.sg_web_instance.id]
+  dynamic ingress {
+    iterator = rule
+    for_each = var.ingress_traffic_db
+    content {
+      description = rule.value.description
+      from_port = rule.value.from_port
+      to_port = rule.value.to_port
+      protocol = rule.value.protocol
+      security_groups = [aws_security_group.sg_web_instance.id]
+    }
   }
 
   egress {

@@ -8,26 +8,37 @@ variable "aws_region" {
   description = "AWS region"
 }
 
-variable "ec2_instance" {
-  type = object({
-    aws_web_azs = list(string)
-    ami_name = string
-    instance_type = string
-  })
-  description = "Instance"
+variable "ec2_instance_azs" {
+  description = "EC2 available zones"
+  type = list(string)
 }
 
-variable "rds_instance" {
-  type = object({
-    aws_rds_azs = list(string)
-    engine = string
-    engine_version = string
-    instance_class = string
-    availability_zone = string
-    storage_type = string
-    allocated_storage = number,
-    maintenance_window = string
-    backup_window = string
-  })
-  description = "rds_instance"
+variable "ec2_instance_aim_name" {
+  description = "EC2 aim name"
+  type = string
+}
+
+variable "ec2_instance_type" {
+  description = "EC2 instance type"
+  type = string
+}
+
+variable "db_instance_azs" {
+  description = "DB available zones"
+  type = list(string)
+}
+
+variable "db_instance_class" {
+  description = "DB instance class"
+  type = string
+}
+
+variable "db_availability_zone" {
+  description = "DB Availability Zone"
+  type = string
+}
+
+variable "db_allocated_storage" {
+  description = "DB Allocated Storage"
+  type = number
 }

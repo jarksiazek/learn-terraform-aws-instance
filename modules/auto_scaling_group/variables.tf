@@ -13,13 +13,19 @@ variable "target_group_arns" {
   type = list(string)
 }
 
-variable "instance_parameters" {
-  type = object({
-    aws_web_azs = list(string)
-    ami_name = string
-    instance_type = string
-  })
-  description = "Instance"
+variable "ec2_instance_azs" {
+  description = "EC2 available zones"
+  type = list(string)
+}
+
+variable "ec2_instance_aim_name" {
+  description = "EC2 aim name"
+  type = string
+}
+
+variable "ec2_instance_type" {
+  description = "EC2 instance type"
+  type = string
 }
 
 variable "asg_schedules" {
