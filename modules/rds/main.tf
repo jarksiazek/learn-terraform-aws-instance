@@ -34,6 +34,10 @@ resource "aws_db_instance" "this" {
   skip_final_snapshot = true
   deletion_protection = false
 
+  lifecycle {
+    ignore_changes = ["password"]
+  }
+
   tags = {
     env = var.aws_env
   }

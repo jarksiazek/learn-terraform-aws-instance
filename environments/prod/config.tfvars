@@ -1,3 +1,3 @@
 bucket = "up-skill-terraform-jk"
-key = "dev"
+key = "prod"
 profile = "up-skill-jk"

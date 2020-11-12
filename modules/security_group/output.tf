@@ -1,14 +1,4 @@
-output "web_load_balancer_sg_id" {
-  description = "security group id for loadbalancer"
-  value = aws_security_group.sg_web_load_balancer .id
-}
-
-output "web_instance_sg_id" {
-  description = "security group id for instances"
-  value = aws_security_group.sg_web_instance.id
-}
-
-output "db_instance_sg_id" {
-  description = "security group id for db"
-  value = aws_security_group.sg_db_instance.id
+output "sg_id" {
+  description = "security group id"
+  value = aws_security_group.this.id
 }
